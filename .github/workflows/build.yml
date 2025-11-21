@@ -33,24 +33,12 @@ jobs:
           if ($v -eq '') { Write-Error 'version input is required'; exit 1 }
           if ($v -notmatch '^v\d+\.\d+\.\d+$') { Write-Error "Invalid version: $v. Expected vX.Y.Z"; exit 1 }
           "VERSION=$v" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-      - name: Rename to Chinese
-        shell: pwsh
-        run: |
-          $dist = Join-Path $PWD 'dist'
-          $src = Join-Path $dist 'MDMetaGenerator.exe'
-          $dstName = 'MD' + [char]0x6587 + [char]0x7AE0 + 'meta' + [char]0x4FE1 + [char]0x606F + [char]0x751F + [char]0x6210 + [char]0x5668 + '.exe'
-          if (Test-Path $src) { Rename-Item -LiteralPath $src -NewName $dstName }
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: windows-exe
-          path: dist/*.exe
+      # keep original English name for release upload
       - name: Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: |
-            dist/*.exe
+          files: dist/MDMetaGenerator.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Release (manual)
@@ -59,7 +47,6 @@ jobs:
         with:
           tag_name: ${{ env.VERSION }}
           name: ${{ env.VERSION }}
-          files: |
-            dist/*.exe
+          files: dist/MDMetaGenerator.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
