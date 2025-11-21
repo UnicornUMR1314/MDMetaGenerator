@@ -12,6 +12,9 @@ on:
     tags:
       - 'v*'
 
+permissions:
+  contents: write
+
 jobs:
   build-windows:
     runs-on: windows-latest
@@ -39,6 +42,8 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: dist/MDMetaGenerator.exe
+          overwrite_files: true
+          target_commitish: ${{ github.sha }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Release (manual)
@@ -48,5 +53,7 @@ jobs:
           tag_name: ${{ env.VERSION }}
           name: ${{ env.VERSION }}
           files: dist/MDMetaGenerator.exe
+          overwrite_files: true
+          target_commitish: ${{ github.sha }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
