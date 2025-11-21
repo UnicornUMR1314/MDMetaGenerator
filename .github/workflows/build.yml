@@ -1,0 +1,42 @@
+name: build-and-release
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller pyyaml
+      - name: Build exe
+        run: pyinstaller --noconfirm --clean --onefile --windowed --name MDMetaGenerator main.py
+      - name: Rename to Chinese
+        shell: pwsh
+        run: |
+          $dist = Join-Path $PWD 'dist'
+          $src = Join-Path $dist 'MDMetaGenerator.exe'
+          $dstName = 'MD' + [char]0x6587 + [char]0x7AE0 + 'meta' + [char]0x4FE1 + [char]0x606F + [char]0x751F + [char]0x6210 + [char]0x5668 + '.exe'
+          if (Test-Path $src) { Rename-Item -LiteralPath $src -NewName $dstName }
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-exe
+          path: dist/*.exe
+      - name: Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/*.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
