@@ -22,7 +22,7 @@ class DatabaseManager:
             CREATE TABLE IF NOT EXISTS categories (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT UNIQUE NOT NULL,
-                type TEXT NOT NULL,  -- 'tag', 'category', 'author', 'series'
+                type TEXT NOT NULL,  -- 'tag', 'category', 'author'
                 usage_count INTEGER DEFAULT 0,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 last_used TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -83,12 +83,7 @@ class DatabaseManager:
                 INSERT OR IGNORE INTO categories (name, type) VALUES (?, ?)
             ''', (author, 'author'))
             
-        # 默认系列
-        default_series = ['系列一', '系列二', '系列三']
-        for series in default_series:
-            cursor.execute('''
-                INSERT OR IGNORE INTO categories (name, type) VALUES (?, ?)
-            ''', (series, 'series'))
+        
             
         # 默认设置
         default_settings = {

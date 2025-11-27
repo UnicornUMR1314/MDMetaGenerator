@@ -711,56 +711,7 @@ class ArticleMetaGenerator:
         manage_category_btn.pack(side=tk.LEFT)
         row += 1
         
-        # 系列管理
-        series_label = ttk.Label(
-            parent, 
-            text="📚 系列:", 
-            style='Modern.TLabel',
-            font=(MODERN_STYLE['font_family'], MODERN_STYLE['font_size_normal'], 'bold')
-        )
-        series_label.grid(row=row, column=0, sticky=tk.W, padx=(0, 12), pady=4)
         
-        series_frame = ttk.Frame(parent, style='Modern.TFrame')
-        series_frame.grid(row=row, column=1, sticky=(tk.W, tk.E), pady=4)
-        
-        self.series_var = tk.StringVar()
-        self.series_combo = ttk.Combobox(
-            series_frame, 
-            textvariable=self.series_var, 
-            values=self.db.get_categories_by_type('series'), 
-            width=40,
-            style='Modern.TCombobox',
-            font=(MODERN_STYLE['font_family'], MODERN_STYLE['font_size_normal'])
-        )
-        self.series_combo.pack(side=tk.LEFT, padx=(0, 8))
-        
-        manage_series_btn = ttk.Button(
-            series_frame, 
-            text="📚 管理", 
-            command=lambda: self.manage_categories('series'),
-            style='Modern.TButton'
-        )
-        manage_series_btn.pack(side=tk.LEFT)
-        row += 1
-        
-        # 系列权重
-        weight_label = ttk.Label(
-            parent, 
-            text="⚖️ 系列权重:", 
-            style='Modern.TLabel',
-            font=(MODERN_STYLE['font_family'], MODERN_STYLE['font_size_normal'], 'bold')
-        )
-        weight_label.grid(row=row, column=0, sticky=tk.W, padx=(0, 12), pady=4)
-        
-        self.series_weight_var = tk.StringVar(value="")
-        weight_entry = ttk.Entry(
-            parent, 
-            textvariable=self.series_weight_var, 
-            width=18,
-            style='Modern.TEntry',
-            font=(MODERN_STYLE['font_family'], MODERN_STYLE['font_size_normal'])
-        )
-        weight_entry.grid(row=row, column=1, sticky=tk.W, pady=4)
         
     def create_modern_display_settings_section(self, parent):
         """创建现代化展示设置区域"""
@@ -1211,7 +1162,7 @@ class ArticleMetaGenerator:
                 self.subtitle_var.set(record.get('subtitle', ''))
                 self.author_var.set(record.get('author', ''))
                 self.category_var.set(record.get('category', ''))
-                self.series_var.set(record.get('series', ''))
+                
                 
                 # 切换到主界面
                 self.notebook.select(0)
@@ -1272,8 +1223,7 @@ class ArticleMetaGenerator:
             self.db.update_category_usage(self.tags_var.get(), 'tag')
         if self.category_var.get():
             self.db.update_category_usage(self.category_var.get(), 'category')
-        if self.series_var.get():
-            self.db.update_category_usage(self.series_var.get(), 'series')
+        
             
         front_matter = {
             'title': self.title_var.get(),
@@ -1285,7 +1235,7 @@ class ArticleMetaGenerator:
             'description': self.description_text.get('1.0', tk.END).strip(),
             'tags': [self.tags_var.get()] if self.tags_var.get() else [],
             'categories': [self.category_var.get()] if self.category_var.get() else [],
-            'series': [self.series_var.get()] if self.series_var.get() else [],
+            
             'hiddenFromHomePage': False,
             'hiddenFromSearch': False,
             'toc': {
@@ -1384,7 +1334,7 @@ class ArticleMetaGenerator:
                 author=self.author_var.get(),
                 tags=[self.tags_var.get()] if self.tags_var.get() else [],
                 category=self.category_var.get(),
-                series=self.series_var.get(),
+                series="",
                 language=','.join(languages),
                 save_path=str(save_path)
             )
@@ -1461,8 +1411,7 @@ class ArticleMetaGenerator:
         self.date_var.set(datetime.now().astimezone().isoformat(timespec='seconds'))
         self.tags_var.set("")
         self.category_var.set("")
-        self.series_var.set("")
-        self.series_weight_var.set("")
+        
         self.description_text.delete('1.0', tk.END)
         self.featured_image_var.set("")
         self.featured_image_preview_var.set("")
@@ -1508,8 +1457,7 @@ class ArticleMetaGenerator:
                 self.tags_combo.configure(values=new_vals)
             elif category_type == 'category' and hasattr(self, 'category_combo'):
                 self.category_combo.configure(values=new_vals)
-            elif category_type == 'series' and hasattr(self, 'series_combo'):
-                self.series_combo.configure(values=new_vals)
+            
 
         def on_add():
             name = entry.get().strip()

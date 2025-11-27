@@ -9,7 +9,6 @@ description: ""
 
 tags: []
 categories: []
-series: []
 
 hiddenFromHomePage: false
 hiddenFromSearch: false
