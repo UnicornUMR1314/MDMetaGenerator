@@ -29,6 +29,13 @@ jobs:
           pip install pyinstaller pyyaml
       - name: Build exe
         run: pyinstaller --noconfirm --clean --onefile --windowed --name MDMetaGenerator main.py
+      - name: Cleanup build directory
+        run: Remove-Item -LiteralPath build -Recurse -Force -ErrorAction SilentlyContinue
+      - name: Cleanup spec files
+        run: Remove-Item -Path *.spec -Force -ErrorAction SilentlyContinue
+      - name: Cleanup python caches
+        run: |
+          Get-ChildItem -Path . -Filter __pycache__ -Directory -Recurse | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
       - name: Validate version input
         shell: pwsh
         run: |
